@@ -1,0 +1,32 @@
+
+
+    var _login = document.getElementsByName("_login")[0].value;
+    var _password = document.getElementsByName("_password")[0].value;
+   
+    
+    var data = new FormData();
+    data.append("login", _login);
+    data.append("password", _password);
+    
+    // AJAX запрос
+    $.ajax({
+        url         : 'ajax/login_user.php',
+        type        : 'POST', 
+        data        : data,
+        cache       : false,
+        dataType    : 'html',
+        processData : false,
+        contentType : false, 
+        success: function (_data) {
+            console.log(_data);
+           
+        },
+        // функция ошибки
+        error: function( ){
+            console.log('Системная ошибка!');
+           
+        }
+    });
+
+
+
