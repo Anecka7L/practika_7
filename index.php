@@ -1,33 +1,33 @@
 <?php
 	session_start();
 	include("./settings/connect_datebase.php");
-include("./settings/session.php");
+	include("./settings/session.php");
 	// $CSRF = password_hash(password: "SECRET", algo: PASSWORD_DEFAULT);
 	// $_SESSION["CSRF"] = $CSRF;
-	define('ENCRYPTION_KEY', 'your-32-char-secret-key-here!123');
-	function generateEncryptedToken() {
-		if (!isset($_SESSION['user'])) {
-			return null;
-		}
+	// define('ENCRYPTION_KEY', 'your-32-char-secret-key-here!123');
+	// function generateEncryptedToken() {
+	// 	if (!isset($_SESSION['user'])) {
+	// 		return null;
+	// 	}
 		
-		$tokenData = [
-			'user_id' => $_SESSION['user'],
-			'timestamp' => time(),
-			'session_id' => session_id()
-		];
+	// 	$tokenData = [
+	// 		'user_id' => $_SESSION['user'],
+	// 		'timestamp' => time(),
+	// 		'session_id' => session_id()
+	// 	];
 		
-		$iv = openssl_random_pseudo_bytes(16);
-		$encrypted = openssl_encrypt(
-			json_encode($tokenData),
-			'AES-256-CBC',
-			ENCRYPTION_KEY,
-			0,
-			$iv
-		);
+	// 	$iv = openssl_random_pseudo_bytes(16);
+	// 	$encrypted = openssl_encrypt(
+	// 		json_encode($tokenData),
+	// 		'AES-256-CBC',
+	// 		ENCRYPTION_KEY,
+	// 		0,
+	// 		$iv
+	// 	);
     
-    	return base64_encode($iv . $encrypted);
-	}
-	$encryptedToken = generateEncryptedToken();
+    // 	return base64_encode($iv . $encrypted);
+	// }
+	// $encryptedToken = generateEncryptedToken();
 ?>
 <!DOCTYPE HTML>
 <html>
@@ -45,7 +45,7 @@ include("./settings/session.php");
 			<a href=#><img src = "img/logo1.png"/></a>
 			<div class="name">
 				<a href="index.php">
-					<div class="subname">БЗОПАСНОСТЬ  ВЕБ-ПРИЛОЖЕНИЙ</div>
+					<div class="subname">БЕЗОПАСНОСТЬ  ВЕБ-ПРИЛОЖЕНИЙ</div>
 					Пермский авиационный техникум им. А. Д. Швецова
 				</a>
 			</div>
@@ -109,7 +109,7 @@ include("./settings/session.php");
 	<script>
 		function SendMessage(sender) {
 			let Message = sender.parentElement.children[0].value;
-			let CSRF = sender.parentElement.children[1].value;
+			// let CSRF = sender.parentElement.children[1].value;
 			let IdPost = sender.parentElement.id;
 			if(Message == "") return;
 
@@ -117,7 +117,7 @@ include("./settings/session.php");
 			Data.append("Message", Message);
 			Data.append("IdPost", IdPost);
 			//Data.append("CSRF", CSRF);
-			Data.append("encrypted_token", encryptedToken); 
+			// Data.append("encrypted_token", encryptedToken); 
 			$.ajax({
 					url         : 'ajax/message.php',
 					type        : 'POST',
@@ -139,5 +139,4 @@ include("./settings/session.php");
 				});
 		}
 	</script>
-
 </html>
