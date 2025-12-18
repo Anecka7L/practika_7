@@ -13,6 +13,7 @@
 		header("Location: login.php");
 		echo "Пользователя не существует";
 	}
+include("./settings/session.php");
 ?>
 <!DOCTYPE HTML>
 <html>
@@ -71,4 +72,5 @@
 			}
 		</script>
 	</body>
+
 </html>
