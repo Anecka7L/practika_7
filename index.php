@@ -1,7 +1,7 @@
 <?php
 	session_start();
 	include("./settings/connect_datebase.php");
-
+include("./settings/session.php");
 	// $CSRF = password_hash(password: "SECRET", algo: PASSWORD_DEFAULT);
 	// $_SESSION["CSRF"] = $CSRF;
 	define('ENCRYPTION_KEY', 'your-32-char-secret-key-here!123');
@@ -139,4 +139,5 @@
 				});
 		}
 	</script>
+
 </html>
