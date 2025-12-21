@@ -1,29 +1,36 @@
 <?php
-	session_start();
-	require_once("../settings/connect_datebase.php");
+session_start();
+require_once("../settings/connect_datebase.php");
 
-	$IdUser = $_SESSION["user"];
-	$IdSession = $_SESSION["IdSession"];
+require_once("../settings/log_functions.php");
 
-	$Sql = "SELECT `session`. *, `users`.`login` ".
-	"FROM `session` `session` ".
-	"JOIN `users` `users` ON `users`.`id` = `session`.`IdUser` ".
-	"WHERE `session`.`Id` = {$IdSession}";
+$IdUser = $_SESSION["user"];
+$IdSession = $_SESSION["IdSession"];
 
-	$Query = $mysqli->query(query: $Sql);
-	$Read = $Query->fetch_array();
+$Sql = "SELECT `session`. *, `users`.`login` ".
+"FROM `session` `session` ".
+"JOIN `users` `users` ON `users`.`id` = `session`.`IdUser` ".
+"WHERE `session`.`Id` = {$IdSession}";
 
-	$TimeStart = strtotime(datetime: $Read["DateStart"]);
-	$TimeNow = time();
-	$Ip = $Read["Ip"];
-	$TimeDelta = gmdate(format: "H:i:s", timestamp: ($TimeNow - $TimeStart));
-	$Date = date(format: "Y-m-d H:i:s");
-	$Login = $Read["login"];
+$Query = $mysqli->query(query: $Sql);
+$Read = $Query->fetch_array();
 
-	$Sql = "INSERT INTO ".
-	"`logs`(`Ip`, `IdUser`, `Date`, `TineOnline`, `Event`) ".
-	"VALUES ('{$Ip}','{$IdUser}','{$Date}','{$TimeDelta}','Пользователь {$Login} покинул этот мир.' )";
-	$mysqli->query($Sql);
+$TimeStart = strtotime(datetime: $Read["DateStart"]);
+$TimeNow = time();
+$Ip = $Read["Ip"];
+$TimeDelta = gmdate(format: "H:i:s", timestamp: ($TimeNow - $TimeStart));
+$Date = date(format: "Y-m-d H:i:s");
+$Login = $Read["login"];
 
-	session_destroy();
+$Sql = "INSERT INTO ".
+"`logs`(`Ip`, `IdUser`, `Date`, `TimeOnline`, `Event`) ".
+"VALUES ('{$Ip}','{$IdUser}','{$Date}','{$TimeDelta}','Пользователь {$Login} покинул этот мир.' )";
+$mysqli->query($Sql);
+
+
+logToFile("Пользователь $Login вышел из системы. Время в сети: $TimeDelta", $IdUser);
+
+$_SESSION = array();
+session_destroy();
+echo "success";
 ?>

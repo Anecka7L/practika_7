@@ -1,6 +1,7 @@
 <?php
 session_start();
 include("../settings/connect_datebase.php");
+include("../settings/log_functions.php");
 // define('ENCRYPTION_KEY', 'your-32-char-secret-key-here!123');
 // function decryptToken($token) {
 //     try {
@@ -71,7 +72,7 @@ $Sql = "SELECT `session`. *, `users`.`login` ".
 	"FROM `session` `session` ".
 	"JOIN `users` `users` ON `users`.`id` = `session`.`IdUser` ".
 	"WHERE `session`.`Id` = {$IdSession}";
-
+logToFile("Пользователь {$Login} оставил комментарий к записи [Id: {$IdPost}]: {$Message}", $IdUser);
 	$Query = $mysqli->query(query: $Sql);
 	$Read = $Query->fetch_array();
 
@@ -83,7 +84,7 @@ $Sql = "SELECT `session`. *, `users`.`login` ".
 	$Login = $Read["login"];
 
 	$Sql = "INSERT INTO ".
-	"`logs`(`Ip`, `IdUser`, `Date`, `TineOnline`, `Event`) ".
+	"`logs`(`Ip`, `IdUser`, `Date`, `TimeOnline`, `Event`) ".
 	"VALUES ('{$Ip}','{$IdUser}','{$Date}','{$TimeDelta}','Пользователь {$Login} оставил комментарий к записи [Id: {$IdPost}]: {$Message}' )";
 	$mysqli->query($Sql);
 
@@ -94,6 +95,7 @@ $query->bind_param("iis", $IdUser, $IdPost, $Message);
 if ($query->execute()) {
     echo "Сообщение отправлено";
 } else {
+    logToFile("Ошибка при отправке комментария к записи [Id: {$IdPost}]", $IdUser);
     echo "Ошибка при отправке";
 }
 

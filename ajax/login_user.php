@@ -1,7 +1,8 @@
 <?php
 	session_start();
 	include("../settings/connect_datebase.php");
-	
+	include("../settings/log_functions.php");
+
 	$login = $_POST['login'];
 	$password = $_POST['password'];
 	
@@ -41,6 +42,8 @@ if($id != -1) {
 	$Ip = $_SERVER["REMOTE_ADDR"];
 	$DateStart = date(format: "Y-m-d H:i:s");
 
+	logToFile("Успешная авторизация пользователя: $login", $id);
+
 	$Sql = "INSERT INTO `session`(`IdUser`, `Ip`, `DateStart`, `DateNow`) VALUES ({$id}, '{$Ip}', '{$DateStart}', '{$DateStart}')";
 	$mysqli->query(query: $Sql);
 
@@ -54,5 +57,8 @@ if($id != -1) {
 	"VALUES ('{$Ip}','{$id}','{$DateStart}','00:00:00','Пользователь {$login} авторизовался.')";
 	$mysqli->query(query: $Sql);
 }
-//  echo md5(md5($id));
+else {
+    logToFile("Неудачная попытка входа. Логин: $login");
+}
+  echo md5(md5($id));
 ?>

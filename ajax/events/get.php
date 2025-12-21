@@ -1,5 +1,6 @@
 <?php
     require_once("../../settings/connect_datebase.php");
+    require_once("../../settings/log_functions.php");
 
     $Sql = "SELECT * FROM `logs` ORDER BY `Date`";
     $Query = $mysqli->query(query: $Sql);
@@ -15,6 +16,7 @@
 			if($QuerySession->num_rows > 0){
 			$ReadSession = $QuerySession->fetch_assoc();
 							
+
 			$TimeEnd = strtotime(datetime: $ReadSession["DateNow"]) + 5*60;
 			$TimeNow = time();
 
@@ -26,6 +28,8 @@
                 $Status = "Был в сети: {$TimeDelta} минут назад";
                 }			
 	}
+					
+
         $Event = array(
             "Id" => $Read["Id"],
             "Ip" => $Read["Ip"],
@@ -36,5 +40,6 @@
         );
         array_push($Events, $Event);
     }
+    logToFile("Запрошен журнал событий. Записей: " . count($Events));
     echo json_encode(value: $Events, flags: JSON_UNESCAPED_UNICODE);
 ?>
