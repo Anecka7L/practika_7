@@ -3,7 +3,6 @@
 	include("./settings/connect_datebase.php");
 	include("./settings/log_functions.php");
 	
-	
 	if (isset($_SESSION['user'])) {
 		if($_SESSION['user'] != -1) {
 			$user_query = $mysqli->query("SELECT * FROM `users` WHERE `id` = ".$_SESSION['user']); // проверяем
@@ -16,7 +15,7 @@
 		echo "Пользователя не существует";
 	}
 	include("./settings/session.php");
-	logToFile("Просмотр журнала событий", $_SESSION['user']);
+	logToFile("Просмотр административной панели", $_SESSION['user']);
 ?>
 <!DOCTYPE HTML>
 <html>
@@ -26,15 +25,6 @@
 		<title> Admin панель </title>
 		
 		<link rel="stylesheet" href="style.css">
-		<style>
-			table{
-				width: 100%;
-			}
-			td{
-				text-align: center;
-				padding: 10px;
-			}
-		</style>
 	</head>
 	<body>
 		<div class="top-menu">
@@ -50,21 +40,30 @@
 		<div class="space"> </div>
 		<div class="main">
 			<div class="content">
-				<input type="button" class="button" value="Выйти" onclick="location.href='../server.permaviat.ru/login.php'"/>
-				
-				<div class="name">Журнал событий</div>
+				<input type="button" class="button" value="Выйти" onclick="logout()"/>
+				<input type="button" class="button" value="Журнал событий" onclick="location.href='logs.php'">
+				<div class="name">Административная панель</div>
 			
-			<table border="1">
-				<tr>
-					<td style="width: 165px;">Дата и время</td>
-					<td style="width: 165px;">IP Пользователя</td>
-					<td style="width: 165px;">Время в сети</td>
-					<td style="width: 165px;">Статус</td>
-					<td>Произошедшее событие</td>
-				</tr>
-			</table>
+				Административная панель служит для создания, редактирования и удаления записей на сайте.
+			
 
 
+				<?php
+						$Sql = "SELECT * FROM `session` WHERE `IdUser` = {$_SESSION["user"]} ORDER BY `DateStart` DESC";
+						$Query = $mysqli->query(query: $Sql);
+						if($Query->num_rows > 1){
+							$Read = $Query->fetch_assoc();
+							$Read = $Query->fetch_assoc();
+
+							$TimeEnd = strtotime(datetime: $Read["DateNow"]);
+							$TimeNow = time();
+
+							$TimeDelta = round(num: ($TimeNow - $TimeEnd)/60);
+							echo "<br>Последняя активная сессия была: {$TimeDelta} минут назад";
+						}
+					?>
+
+					
 				<div class="footer">
 					© КГАПОУ "Авиатехникум", 2020
 					<a href=#>Конфиденциальность</a>
@@ -74,41 +73,22 @@
 		</div>
 		
 		<script>
-			GetEvents();
-			function GetEvents(){
+			function logout() {
 				$.ajax({
-					url         : 'ajax/events/get.php',
+					url         : 'ajax/logout.php',
 					type        : 'POST', // важно!
 					data        : null,
 					cache       : false,
 					dataType    : 'html',
 					processData : false,
 					contentType : false, 
-					// функция успешного ответа сервера
-					success: GetEventsAjax,
-					// функция ошибки
+					success: function (_data) {
+						location.reload();
+					},
 					error: function( ){
 						console.log('Системная ошибка!');
 					}
 				});
-			}
-			function GetEventsAjax(_data){
-				console.log(_data);
-
-				let $Table = $("table > tbody");
-				let Events = JSON.parse(_data);
-
-				Events.forEach((Event) => {
-					$Table.append(`
-					<tr>
-						<td>${Event["Date"]}</td>
-						<td>${Event["Ip"]}</td>
-						<td>${Event["TimeOnline"]}</td>
-						<td>${Event["Status"]}</td>
-						<td style="text-align: left;">${Event["Event"]}</td>
-					</tr>
-					`);
-				})
 			}
 		</script>
 	</body>
